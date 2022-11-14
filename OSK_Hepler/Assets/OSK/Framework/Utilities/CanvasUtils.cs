@@ -8,6 +8,22 @@ namespace OSK.Utils
     public static class CanvasUtils
     {
         //  if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject())
+        public static bool IsPointerOverUI()
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return true;
+            }
+            else
+            {
+                PointerEventData pe = new PointerEventData(EventSystem.current);
+                pe.position = Input.mousePosition;
+                List<RaycastResult> hits = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(pe, hits);
+                return hits.Count > 0;
+            }
+        }
+
         public static bool IsPointerOverUIObject()
         {
             var eventDataCurrentPosition = new PointerEventData(EventSystem.current);

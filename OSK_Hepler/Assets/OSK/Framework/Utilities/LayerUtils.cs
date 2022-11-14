@@ -4,29 +4,12 @@ namespace OSK.Utils
 {
     public static class LayerUtils
     {
-
-        public const string LAYER_PLAYER = "Player";
-        public const string LAYER_VICTIM = "Victim";
-        public const string LAYER_AI = "AIBot";
-
-        public static int GetDoorsLayerMask()
+        // Get Sorting order to set SpriteRenderer sortingOrder, higher position = lower sortingOrder
+        public const int sortingOrderDefault = 5000;
+        public static int GetSortingOrder(Vector3 position, int offset, int baseSortingOrder = sortingOrderDefault)
         {
-            return LayerMask.GetMask(LAYER_PLAYER, LAYER_VICTIM);
+            return (int)(baseSortingOrder - position.y) + offset;
         }
 
-        public static int GetRadarAllLayerMask()
-        {
-            return ~LayerMask.GetMask(LAYER_VICTIM);
-        }
-
-        public static int GetVictimLayerMask()
-        {
-            return LayerMask.GetMask(LAYER_VICTIM);
-        }
-
-        public static int GetVictimLayer(bool isVictim)
-        {
-            return (isVictim) ? LayerMask.NameToLayer(LAYER_VICTIM) : LayerMask.NameToLayer(LAYER_PLAYER);
-        }
     }
 }
