@@ -4,52 +4,15 @@ using UnityEngine;
 
 namespace OSK
 {
-	public class UIMonoBehaviour : MonoBehaviour
+	public class UIMonoBehaviour : UIAnimate
 	{
-		#region Properties
-
-		public RectTransform RectT { get { return transform as RectTransform; } }
-
-		#endregion
-
-		#region Member Variables
-
 		private IEnumerator shakeRoutine;
 		private IEnumerator pulseRoutine;
 		private IEnumerator twistRoutine;
 
-		private CanvasGroup canvasGroup;
-
-		#endregion
-
-		#region Properties
-
-		public CanvasGroup CG
-		{
-			get
-			{
-				if (canvasGroup == null)
-				{
-						canvasGroup = gameObject.GetComponent<CanvasGroup>();
-
-						if (canvasGroup == null)
-						{
-							canvasGroup = gameObject.AddComponent<CanvasGroup>();
-						}
-				}
-
-				return canvasGroup;
-			}
-		}
-
-		#endregion
-
-		#region Animations
-
 		public void Shake(float origX, int shakeAmount, float shakeForce, float shakeAnimDuration)
 		{
 			StopRoutine(shakeRoutine);
-
 			StartCoroutine(shakeRoutine = StartShake(origX, shakeAmount, shakeForce, shakeAnimDuration));
 		}
 
@@ -71,7 +34,6 @@ namespace OSK
 
 			// Move it back to the middle
 			UIAnimation.PositionX(transform as RectTransform, origX, shakeAnimDuration).Play();
-
 			shakeRoutine = null;
 		}
 
@@ -148,11 +110,6 @@ namespace OSK
 
 			twistRoutine = null;
 		}
-
-		#endregion
-
-		#region Private Methods
-
 		private void StopRoutine(IEnumerator routine)
 		{
 			if (routine != null)
@@ -160,7 +117,5 @@ namespace OSK
 				StopCoroutine(routine);
 			}
 		}
-
-		#endregion
 	}
 }

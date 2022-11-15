@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace OSK
+namespace OSK.Utils
 {
     public class TakeScreenShotUtils : MonoBehaviour
     {

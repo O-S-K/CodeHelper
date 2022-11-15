@@ -4,241 +4,226 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-	public class ObjectPool
-	{
-		private GameObject			objectPrefab		= null;
-		private List<PoolObject>	poolObjects = new List<PoolObject>();
-		private Transform			parent				= null;
-		private PoolBehaviour		poolBehaviour		= PoolBehaviour.GameObject;
+    public class ObjectPool
+    {
+        private GameObject objectPrefab = null;
+        private List<PoolObject> poolObjects = new List<PoolObject>();
+        private Transform parent = null;
+        private PoolBehaviour poolBehaviour = PoolBehaviour.GameObject;
 
+        public enum PoolBehaviour
+        {
+            GameObject,
+            CanvasGroup
+        }
 
-		public enum PoolBehaviour
-		{
-			GameObject,
-			CanvasGroup
-		}
+        /// <summary>
+        /// Initializes a new instance of the ObjectPooler class.
+        /// </summary>
+        public ObjectPool(GameObject objectPrefab, int initialSize, Transform parent = null, PoolBehaviour poolBehaviour = PoolBehaviour.GameObject)
+        {
+            this.objectPrefab = objectPrefab;
+            this.parent = parent;
+            this.poolBehaviour = poolBehaviour;
 
-		/// <summary>
-		/// Initializes a new instance of the ObjectPooler class.
-		/// </summary>
-		public ObjectPool(GameObject objectPrefab, int initialSize, Transform parent = null, PoolBehaviour poolBehaviour = PoolBehaviour.GameObject)
-		{
-			this.objectPrefab	= objectPrefab;
-			this.parent			= parent;
-			this.poolBehaviour	= poolBehaviour;
+            for (int i = 0; i < initialSize; i++)
+            {
+                CreateObject();
+            }
+        }
 
-			for (int i = 0; i < initialSize; i++)
-			{
-				CreateObject();
-			}
-		}
+        public static Transform CreatePoolContainer(Transform containerParent, string name = "pool_container")
+        {
+            GameObject container = new GameObject(name);
+            container.SetActive(false);
+            container.transform.SetParent(containerParent);
+            return container.transform;
+        }
 
-		public static Transform CreatePoolContainer(Transform containerParent, string name = "pool_container")
-		{
-			GameObject container = new GameObject(name);
+        public static void ReturnObjectToPool(GameObject gameObject)
+        {
+            PoolObject poolObject = gameObject.GetComponent<PoolObject>();
 
-			container.SetActive(false);
-			container.transform.SetParent(containerParent);
+            if (poolObject == null)
+            {
+                Debug.LogWarning("[ObjectPool] ReturnToPool: The gameObject " + gameObject.name + " does not belong to any pool.");
+                return;
+            }
+            poolObject.pool.ReturnObjectToPool(poolObject);
+        }
 
-			return container.transform;
-		}
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public GameObject GetObject()
+        {
+            bool temp;
+            return GetObject(out temp);
+        }
 
-		public static void ReturnObjectToPool(GameObject gameObject)
-		{
-			PoolObject poolObject = gameObject.GetComponent<PoolObject>();
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public GameObject GetObject(out bool instantiated)
+        {
+            instantiated = false;
+            PoolObject poolObject = null;
 
-			if (poolObject == null)
-			{
-				Debug.LogWarning("[ObjectPool] ReturnToPool: The gameObject " + gameObject.name + " does not belong to any pool.");
-				return;
-			}
+            for (int i = 0; i < poolObjects.Count; i++)
+            {
+                if (poolObjects[i].isInPool)
+                {
+                    poolObject = poolObjects[i];
+                    break;
+                }
+            }
 
-			poolObject.pool.ReturnObjectToPool(poolObject);
-		}
+            if (poolObject == null)
+            {
+                poolObject = CreateObject();
+                instantiated = true;
+            }
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public GameObject GetObject()
-		{
-			bool temp;
+            switch (poolBehaviour)
+            {
+                case PoolBehaviour.GameObject:
+                    poolObject.gameObject.SetActive(true);
+                    break;
+                case PoolBehaviour.CanvasGroup:
+                    poolObject.canvasGroup.alpha = 1f;
+                    poolObject.canvasGroup.interactable = true;
+                    poolObject.canvasGroup.blocksRaycasts = true;
+                    break;
+            }
 
-			return GetObject(out temp);
-		}
+            poolObject.isInPool = false;
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public GameObject GetObject(out bool instantiated)
-		{
-			instantiated = false;
+            return poolObject.gameObject;
+        }
 
-			PoolObject poolObject = null;
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public GameObject GetObject(Transform parent)
+        {
+            bool temp;
+            return GetObject(parent, out temp);
+        }
 
-			for (int i = 0; i < poolObjects.Count; i++)
-			{
-				if (poolObjects[i].isInPool)
-				{
-					poolObject = poolObjects[i];
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public GameObject GetObject(Transform parent, out bool instantiated)
+        {
+            GameObject obj = GetObject(out instantiated);
+            obj.transform.SetParent(parent, false);
+            return obj;
+        }
 
-					break;
-				}
-			}
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public T GetObject<T>(Transform parent) where T : Component
+        {
+            return GetObject(parent).GetComponent<T>();
+        }
 
-			if (poolObject == null)
-			{
-				poolObject		= CreateObject();
-				instantiated	= true;
-			}
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public T GetObject<T>(Transform parent, out bool instantiated) where T : Component
+        {
+            return GetObject(parent, out instantiated).GetComponent<T>();
+        }
 
-			switch (poolBehaviour)
-			{
-				case PoolBehaviour.GameObject:
-					poolObject.gameObject.SetActive(true);
-					break;
-				case PoolBehaviour.CanvasGroup:
-					poolObject.canvasGroup.alpha			= 1f;
-					poolObject.canvasGroup.interactable		= true;
-					poolObject.canvasGroup.blocksRaycasts	= true;
-					break;
-			}
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public T GetObject<T>() where T : Component
+        {
+            return GetObject().GetComponent<T>();
+        }
 
-			poolObject.isInPool = false;
+        /// <summary>
+        /// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
+        /// Objects are returned to the pool by setting their active state to false.
+        /// </summary>
+        public T GetObject<T>(out bool instantiated) where T : Component
+        {
+            return GetObject(out instantiated).GetComponent<T>();
+        }
 
-			return poolObject.gameObject;
-		}
+        /// <summary>
+        /// Sets all instantiated GameObjects to de-active
+        /// </summary>
+        public void ReturnAllObjectsToPool()
+        {
+            for (int i = 0; i < poolObjects.Count; i++)
+            {
+                ReturnObjectToPool(poolObjects[i]);
+            }
+        }
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public GameObject GetObject(Transform parent)
-		{
-			bool temp;
+        /// <summary>
+        /// Returns the object to pool.
+        /// </summary>
+        public void ReturnObjectToPool(PoolObject poolObject)
+        {
+            poolObject.transform.SetParent(parent, false);
 
-			return GetObject(parent, out temp);
-		}
+            switch (poolBehaviour)
+            {
+                case PoolBehaviour.GameObject:
+                    poolObject.gameObject.SetActive(false);
+                    break;
+                case PoolBehaviour.CanvasGroup:
+                    poolObject.canvasGroup.alpha = 0f;
+                    poolObject.canvasGroup.interactable = false;
+                    poolObject.canvasGroup.blocksRaycasts = false;
+                    break;
+            }
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public GameObject GetObject(Transform parent, out bool instantiated)
-		{
-			GameObject obj = GetObject(out instantiated);
+            poolObject.isInPool = true;
+        }
 
-			obj.transform.SetParent(parent, false);
+        /// <summary>
+        /// Destroies all objects.
+        /// </summary>
+        public void DestroyAllObjects()
+        {
+            for (int i = 0; i < poolObjects.Count; i++)
+            {
+                GameObject.Destroy(poolObjects[i]);
+            }
 
-			return obj;
-		}
+            poolObjects.Clear();
+        }
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public T GetObject<T>(Transform parent) where T : Component
-		{
-			return GetObject(parent).GetComponent<T>();
-		}
+        private PoolObject CreateObject()
+        {
+            GameObject obj = GameObject.Instantiate(objectPrefab);
+            PoolObject poolObject = obj.AddComponent<PoolObject>();
+            poolObject.pool = this;
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public T GetObject<T>(Transform parent, out bool instantiated) where T : Component
-		{
-			return GetObject(parent, out instantiated).GetComponent<T>();
-		}
+            if (poolBehaviour == PoolBehaviour.CanvasGroup)
+            {
+                poolObject.canvasGroup = obj.GetComponent<CanvasGroup>();
 
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public T GetObject<T>() where T : Component
-		{
-			return GetObject().GetComponent<T>();
-		}
-
-		/// <summary>
-		/// Returns an object, if there is no object that can be returned from instantiatedObjects then it creates a new one.
-		/// Objects are returned to the pool by setting their active state to false.
-		/// </summary>
-		public T GetObject<T>(out bool instantiated) where T : Component
-		{
-			return GetObject(out instantiated).GetComponent<T>();
-		}
-
-		/// <summary>
-		/// Sets all instantiated GameObjects to de-active
-		/// </summary>
-		public void ReturnAllObjectsToPool()
-		{
-			for (int i = 0; i < poolObjects.Count; i++)
-			{
-				ReturnObjectToPool(poolObjects[i]);
-			}
-		}
-
-		/// <summary>
-		/// Returns the object to pool.
-		/// </summary>
-		public void ReturnObjectToPool(PoolObject poolObject)
-		{
-			poolObject.transform.SetParent(parent, false);
-
-			switch (poolBehaviour)
-			{
-				case PoolBehaviour.GameObject:
-					poolObject.gameObject.SetActive(false);
-					break;
-				case PoolBehaviour.CanvasGroup:
-					poolObject.canvasGroup.alpha			= 0f;
-					poolObject.canvasGroup.interactable		= false;
-					poolObject.canvasGroup.blocksRaycasts	= false;
-					break;
-			}
-
-			poolObject.isInPool = true;
-		}
-
-		/// <summary>
-		/// Destroies all objects.
-		/// </summary>
-		public void DestroyAllObjects()
-		{
-			for (int i = 0; i < poolObjects.Count; i++)
-			{
-				GameObject.Destroy(poolObjects[i]);
-			}
-
-			poolObjects.Clear();
-		}
-
-		private PoolObject CreateObject()
-		{
-			GameObject obj = GameObject.Instantiate(objectPrefab);
-
-			PoolObject poolObject = obj.AddComponent<PoolObject>();
-
-			poolObject.pool = this;
-
-			if (poolBehaviour == PoolBehaviour.CanvasGroup)
-			{
-				poolObject.canvasGroup = obj.GetComponent<CanvasGroup>();
-
-				if (poolObject.canvasGroup == null)
-				{
-					poolObject.canvasGroup = obj.AddComponent<CanvasGroup>();
-				}
-			}
-
-			poolObjects.Add(poolObject);
-
-			ReturnObjectToPool(poolObject);
-
-			return poolObject;
-		}
-	}
+                if (poolObject.canvasGroup == null)
+                {
+                    poolObject.canvasGroup = obj.AddComponent<CanvasGroup>();
+                }
+            }
+            poolObjects.Add(poolObject);
+            ReturnObjectToPool(poolObject);
+            return poolObject;
+        }
+    }
 }

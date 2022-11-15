@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using SimpleJSON;
 
-namespace OSK
+namespace OSK.Save
 {
     public static class JsonUtils
     {

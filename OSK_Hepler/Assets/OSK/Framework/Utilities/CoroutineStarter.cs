@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK
+namespace OSK 
 {
 	public class CoroutineStarter : MonoBehaviour
-	{
-		#region Public Methods
+	{ 
 
 		public static void Start(IEnumerator routine)
 		{
 			new GameObject("routine").AddComponent<CoroutineStarter>().RunCoroutine(routine);
 		}
-
-		#endregion
-
-		#region Private Methods
+		 
 
 		private void RunCoroutine(IEnumerator routine)
 		{
@@ -24,11 +20,9 @@ namespace OSK
 
 		private IEnumerator RunCoroutineHelper(IEnumerator routine)
 		{
-			yield return routine;
-
+			yield return routine; 
 			Destroy(gameObject);
 		}
-
-		#endregion
+		 
 	}
 }

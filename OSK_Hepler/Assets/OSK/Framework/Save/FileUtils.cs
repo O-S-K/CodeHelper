@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System;
 
-namespace OSK
+namespace OSK.Save
 {
     public static class FileUtils
     { 

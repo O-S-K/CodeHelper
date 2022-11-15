@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace OSK
+namespace OSK.Utils
 {
     public static class Utilities
     { 

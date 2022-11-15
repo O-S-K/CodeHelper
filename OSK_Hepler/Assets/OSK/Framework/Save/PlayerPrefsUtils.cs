@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK
+namespace OSK.Save
 {
     // https://github.com/herbou/UnityPlayerPrefsExtra
     // Vectors, Colors, Quaternions, Lists, and Your Pre defined types (Object) [classes or structs].

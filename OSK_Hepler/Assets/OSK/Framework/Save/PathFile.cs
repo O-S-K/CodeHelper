@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK
+namespace OSK.Save
 {
     public static class PathFile
     {

@@ -8,14 +8,7 @@ namespace OSK
 	[RequireComponent(typeof(Button))]
 	public class ClickableListItem : MonoBehaviour
 	{
-		#region Member Variables
-
 		private Button uiButton;
-
-		#endregion
-
-		#region Properties
-
 		public int							Index				{ get; set; }
 		public object						Data				{ get; set; }
 		public System.Action<int, object>	OnListItemClicked	{ get; set; }
@@ -36,10 +29,6 @@ namespace OSK
 			}
 		}
 
-		#endregion
-
-		#region Unity Methods
-
 		private void Start()
 		{
 			if (UIButton != null)
@@ -52,10 +41,6 @@ namespace OSK
 			}
 		}
 
-		#endregion
-
-		#region Private Methods
-
 		private void OnButtonClicked()
 		{
 			if (OnListItemClicked != null)
@@ -67,7 +52,5 @@ namespace OSK
 				Debug.LogWarning("[ClickableListItem] OnListItemClicked has not been set on object " + gameObject.name);
 			}
 		}
-
-		#endregion
 	}
 }

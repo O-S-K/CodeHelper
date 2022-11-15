@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK
+namespace OSK.Sound
 {
     public class SoundManager : SingletonMono<SoundManager>
     {

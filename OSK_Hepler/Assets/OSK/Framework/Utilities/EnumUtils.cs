@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace OSK
+namespace OSK.Utils
 {
     public static class EnumUtils
     {
