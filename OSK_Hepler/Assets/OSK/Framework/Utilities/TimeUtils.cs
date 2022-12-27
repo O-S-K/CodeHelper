@@ -12,16 +12,24 @@ namespace OSK.Utils
         private static MonoBehaviour behaviour;
         public delegate void Task();
 
-        //TimeUtils.Schedule(this, 0.5f, () => { });
-        public static void Schedule(MonoBehaviour _behaviour, float delay, Task task)
+        public static void Schedule(MonoBehaviour _behaviour, float delay, Task task, bool unscaleTime = false)
         {
             behaviour = _behaviour;
-            behaviour.StartCoroutine(DoTask(task, delay));
+            if (unscaleTime)
+                behaviour.StartCoroutine(DoTaskUnscale(task, delay));
+            else
+                behaviour.StartCoroutine(DoTask(task, delay));
         }
 
         private static IEnumerator DoTask(Task task, float delay)
         {
             yield return new WaitForSeconds(delay);
+            task();
+        }
+
+        private static IEnumerator DoTaskUnscale(Task task, float delay)
+        {
+            yield return new WaitForSecondsRealtime(delay);
             task();
         }
 
