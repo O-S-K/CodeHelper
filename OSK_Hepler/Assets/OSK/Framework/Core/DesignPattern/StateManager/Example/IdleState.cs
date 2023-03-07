@@ -10,7 +10,6 @@ public class IdleState : State
     {
         if(isChase)
         {
-            chaseState.
             return chaseState;
         }
         else
