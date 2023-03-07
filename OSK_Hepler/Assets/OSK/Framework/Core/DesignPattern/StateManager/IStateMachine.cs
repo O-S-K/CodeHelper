@@ -1,4 +1,4 @@
-public interface IState 
+public interface IStateMachine
 {
     void Enter();
     void Tick();
