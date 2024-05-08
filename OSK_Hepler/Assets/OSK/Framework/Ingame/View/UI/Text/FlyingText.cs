@@ -1,40 +1,51 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿ 
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FlyingText : MonoBehaviour {
+public class FlyingText : MonoBehaviour
+{
+    private Text messess;
+    private float alpha = 1f;
+    private float speed = 1f;
+    private float duration = 2f;
+    private Vector2 startScale;
+    private Vector2 randomPosX;
+    private void Awake()
+    {
+        messess = GetComponent<Text>();
+        startScale = messess.transform.localScale;
+    }
 
-	private Text text;
-	private float alpha = 1f;
-	private float speed = 1f;
-	private float duration = 2f;
-	private Vector2 startScale;
+    public void Init(string text,float spe, float dur)
+    {
+        this.speed = spe;
+        duration = dur;
+        messess.text = text;
+        randomPosX.x = Random.Range(-10f, 10f);
+    }
 
-	void Start() {
-		text = GetComponent<Text> ();
-		startScale = text.transform.localScale;
-	}
+    private void Update()
+    {
+        if (alpha > 0)
+        {
+            // change the y position
+            Vector3 pos = transform.position;
+            pos.y += speed * Time.deltaTime;
+            transform.position = Vector3.Lerp(transform.position, 
+                new Vector3(randomPosX.x, pos.y, pos.z), Random.Range(0.5f, 09f));
 
-	void Update () {
-		if (alpha > 0) {
-			// change the y position
-			Vector3 pos = transform.position;
-			pos.y += speed * Time.deltaTime;
-			transform.position = pos;
+            // change alpha value
+            alpha -= Time.deltaTime / duration;
 
-			// change alpha value
-			alpha -= Time.deltaTime / duration;
+            Color color = messess.color;
+            color.a = alpha;
+            messess.color = color;
 
-			Color color = text.color;
-			color.a = alpha;
-			text.color = color;
-
-			text.transform.localScale = startScale * (0.5f + 0.5f * alpha);
-
-		} else {
-			// destroy the game object if it's invisible
-			Destroy(gameObject);
-		}
-	}
+            messess.transform.localScale = startScale * (0.5f + 0.5f * alpha);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 }

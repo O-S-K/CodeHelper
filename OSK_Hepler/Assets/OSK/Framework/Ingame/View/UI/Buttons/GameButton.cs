@@ -11,27 +11,22 @@ public class GameButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Appearer appearer;
     public Image bg;
     public Color normalColor, hoverColor;
-    
+
     // public string activatesScene;
     public UnityEvent action;
     public bool hidesOnClick = true;
-    
+
     public bool isRotating = true;
 
     private bool done;
     private bool hovered;
-
-    private void Start()
-    {
-        
-    }
 
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (done) return;
 
-        if(hidesOnClick)
+        if (hidesOnClick)
         {
             appearer.Hide();
             done = true;
@@ -67,7 +62,8 @@ public class GameButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             bg.color = hoverColor;
             text.color = hoverColor;
         }
-        if(isRotating)
+
+        if (isRotating)
             transform.rotation = Quaternion.Euler(0, 0, Random.Range(-5f, 5f));
     }
 
@@ -77,16 +73,23 @@ public class GameButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         hovered = false;
 
-        if (Tweener.Instance)
-        {
-            Tweener.Instance.ScaleTo(transform, Vector3.one, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
-            Tweener.Instance.ScaleTo(text.transform, Vector3.one, 0.1f, 0f, TweenEasings.QuadraticEaseOut);
+        Tweener.Instance.ScaleTo(transform, Vector3.one, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
+        Tweener.Instance.ScaleTo(text.transform, Vector3.one, 0.1f, 0f, TweenEasings.QuadraticEaseOut);
 
-            bg.color = normalColor;
-            text.color = normalColor;
-        }
+        bg.color = normalColor;
+        text.color = normalColor;
 
-        if(isRotating)
+        if (isRotating)
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+    }
+
+    private void OnDisable()
+    {
+        hovered = false;
+        bg.color = normalColor;
+        text.color = normalColor;
+
+        if (isRotating)
             transform.rotation = Quaternion.Euler(Vector3.zero);
     }
 

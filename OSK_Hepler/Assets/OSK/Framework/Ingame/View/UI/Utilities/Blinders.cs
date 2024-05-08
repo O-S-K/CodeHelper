@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Blinders : MonoBehaviour
 {
     public Transform left, right;
     public bool startsOpen, openAtStart = true;
 
+    public UnityEvent openCompleted;
+    public UnityEvent closeCompleted;
+
     private float duration = 0.3f;
     private bool isOpen;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         isOpen = startsOpen;
 
@@ -21,7 +24,7 @@ public class Blinders : MonoBehaviour
         right.transform.localScale = new Vector3(1f, 1f, 1f);
 
         if(openAtStart)
-            Invoke("Open", 0.5f);
+            Invoke(nameof(Open), 0.5f);
     }
 
     public void Close()
@@ -30,14 +33,7 @@ public class Blinders : MonoBehaviour
 
         Tweener.Instance.ScaleTo(left, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
         Tweener.Instance.ScaleTo(right, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
-
-        AudioManager.Instance.PlayEffectAt(14, Vector3.zero, 0.632f);
-        AudioManager.Instance.PlayEffectAt(16, Vector3.zero, 0.729f);
-        AudioManager.Instance.PlayEffectAt(11, Vector3.zero, 1.093f);
-
-
-        Invoke("Clang", duration * 0.6f);
-
+        Invoke(nameof(CloseCloseCompleted), duration * 0.6f);
         isOpen = false;
     }
 
@@ -45,11 +41,7 @@ public class Blinders : MonoBehaviour
     {
         Tweener.Instance.ScaleTo(left, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
         Tweener.Instance.ScaleTo(right, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
-
-        AudioManager.Instance.PlayEffectAt(14, Vector3.zero, 0.632f);
-        AudioManager.Instance.PlayEffectAt(16, Vector3.zero, 0.729f);
-        AudioManager.Instance.PlayEffectAt(11, Vector3.zero, 1.093f);
-
+        Invoke(nameof(OpenCloseCompleted), duration * 0.6f);
         isOpen = true;
     }
 
@@ -58,11 +50,12 @@ public class Blinders : MonoBehaviour
         return duration;
     }
 
-    void Clang()
+    private void OpenCloseCompleted()
     {
-        AudioManager.Instance.PlayEffectAt(2, Vector3.zero, 1.328f);
-        AudioManager.Instance.PlayEffectAt(5, Vector3.zero, 1.101f);
-        AudioManager.Instance.PlayEffectAt(7, Vector3.zero, 0.737f);
-
+        openCompleted?.Invoke();
+    }
+    private void CloseCloseCompleted()
+    {
+        closeCompleted?.Invoke();
     }
 }

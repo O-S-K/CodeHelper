@@ -7,14 +7,16 @@ public class SceneChanger : MonoBehaviour
 {
     public Blinders blinders;
     public Transform spinner;
+
     public string sceneToLoadAtStart;
-    //public GameCursor cursor;
+
     public Canvas canvas;
 
     private string sceneToLoad;
     private AsyncOperation operation;
 
     private static SceneChanger instance = null;
+
     public static SceneChanger Instance
     {
         get { return instance; }
@@ -48,7 +50,7 @@ public class SceneChanger : MonoBehaviour
 
     private void Update()
     {
-        if(operation != null && operation.isDone)
+        if (operation != null && operation.isDone)
         {
             operation = null;
             Invoke("After", 0.1f);

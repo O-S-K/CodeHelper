@@ -1,15 +1,40 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ActionButton : MonoBehaviour
+public class ActionButton : MonoBehaviour, IPointerUpHandler, IPointerDownHandler, IPointerExitHandler
 {
-    public Image icon, border, fill;
+    public Image border;
+
+    public bool IsClick = false;
+    public float scaleHover = 1.2f;
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        HoverIn();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        HoverOut();
+    }
+    
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        HoverOut();
+    }
+
+    private void OnDisable()
+    {
+        transform.localScale = Vector3.one;
+    }
 
     public void HoverIn()
     {
-        Tweener.Instance.ScaleTo(transform, Vector3.one * 1.05f, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
+        Tweener.Instance.ScaleTo(transform, Vector3.one * scaleHover, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
         border.color = Color.yellow;
     }
 
@@ -17,9 +42,5 @@ public class ActionButton : MonoBehaviour
     {
         Tweener.Instance.ScaleTo(transform, Vector3.one, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
         border.color = Color.white;
-    }
-
-    public void Click()
-    {
     }
 }
