@@ -8,21 +8,21 @@ namespace OSK
     public class Observer : SingletonMono<Observer>
     {
         public delegate void CallBackObserver(object data);
-        Dictionary<string, HashSet<CallBackObserver>> dictObserver = new Dictionary<string, HashSet<CallBackObserver>>();
+        public static Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
 
-        public void AddObserver(string topicName, CallBackObserver callbackObserver)
+        public static void Add(string topicName, CallBackObserver callbackObserver)
         {
             HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
             listObserver.Add(callbackObserver);
         }
 
-        public void RemoveObserver(string topicName, CallBackObserver callbackObserver)
+        public static void Remove(string topicName, CallBackObserver callbackObserver)
         {
             HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
             listObserver.Remove(callbackObserver);
         }
 
-        public void RemoveAllListeners()
+        public static void RemoveAllListeners()
         {
             List<string> keys = new List<string>(dictObserver.Keys);
             foreach (string key in keys)
@@ -31,7 +31,7 @@ namespace OSK
             }
         }
 
-        public void Notify<OData>(string topicName, OData Data)
+        public static void Notify<OData>(string topicName, OData Data)
         {
             HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
             foreach (CallBackObserver observer in listObserver)
@@ -40,7 +40,7 @@ namespace OSK
             }
         }
 
-        public void Notify(string topicName)
+        public static void Notify(string topicName)
         {
             HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
             foreach (CallBackObserver observer in listObserver)
@@ -49,7 +49,7 @@ namespace OSK
             }
         }
 
-        protected HashSet<CallBackObserver> CreateListObserverForTopic(string topicName)
+        protected static HashSet<CallBackObserver> CreateListObserverForTopic(string topicName)
         {
             if (!dictObserver.ContainsKey(topicName))
             {
