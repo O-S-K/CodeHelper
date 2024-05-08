@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+
 using Random = UnityEngine.Random;
 
 public class FillText : MonoBehaviour
@@ -21,7 +21,7 @@ public class FillText : MonoBehaviour
 
     private void OnEnable()
     {
-        textFill = gameObject.GetOrAddComponent<Text>();
+        textFill = gameObject.GetComponent<Text>();
        StartCoroutine(FillTextTo(0, 1000, delayFill, () => { Debug.Log("Fill Text Completed!"); }) );
     }
 
