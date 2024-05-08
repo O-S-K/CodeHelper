@@ -2,29 +2,73 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Shine : MonoBehaviour {
+public class Shine : MonoBehaviour
+{
+    private Material spriteMaterial = null;
+    private float shinePositon = 0;
+    private Coroutine shineRoutine = null;
 
-	public float distance = 0.1f;
-	public Transform mirrorParent;
-	public bool checkRotation = false;
-	public Vector3 focus = Vector3.up * 10f;
-	private Vector3 originalPos;
+    public float shineSpeed;
+    public bool loop;
+    public int shineRepeats;
+    public float shineWaitTime;
 
-	private void Start () {
-		originalPos = transform.localPosition;
-	}
-	
-	private void Update () {
-		Vector3 direction = (focus - transform.position).normalized;
-		direction.z = originalPos.z;
-		direction.x = mirrorParent ? mirrorParent.localScale.x * direction.x : direction.x;
+    
+    void Start()
+    {
+        // shineLocationParameterID = Shader.PropertyToID("_ShineLocation");
+        // spriteRenderer = GetComponent<SpriteRenderer>();
+        // spriteMaterial = spriteRenderer.material;
 
-		if (checkRotation) {
-			float angle = transform.parent.rotation.eulerAngles.z;
-			float aMod = Mathf.Sign (transform.parent.lossyScale.x);
-			direction = Quaternion.Euler(new Vector3(0, 0, -angle * aMod)) * direction;
-		}
+        StartShine(0);
+    }
+    
 
-		transform.localPosition = Vector3.MoveTowards(transform.localPosition, originalPos + direction * distance, 0.1f);
-	}
+    public void StartShine(float delay)
+    {
+        if (shineRoutine != null)
+            StopCoroutine(shineRoutine);
+        shineRoutine = StartCoroutine(StartShineCoroutine(delay));
+    }
+
+    public void StopShine()
+    {
+        if (shineRoutine != null)
+            StopCoroutine(shineRoutine);
+        shineRoutine = null;
+    }
+
+    private float ShineCurve(float lerpProgress)
+    {
+        float newValue = lerpProgress * lerpProgress * lerpProgress * (lerpProgress * (6f * lerpProgress - 15f) + 10f);
+        return newValue;
+    }
+
+
+    private IEnumerator StartShineCoroutine(float dealay)
+    {
+        yield return new WaitForSeconds(dealay);
+
+        if (shineSpeed <= 0f)
+            yield break;
+
+        int count = loop ? 1 : shineRepeats;
+        while (count > 0)
+        {
+            yield return new WaitForSeconds(shineWaitTime);
+
+            count = loop ? 1 : count - 1;
+
+            float startTime = Time.time;
+
+            while (Time.time < startTime + 1f / shineSpeed)
+            {
+                shinePositon = ShineCurve((Time.time - startTime) * shineSpeed);
+                //spriteMaterial.SetFloat(shineLocationParameterID, shinePositon);
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        yield break;
+    }
 }
