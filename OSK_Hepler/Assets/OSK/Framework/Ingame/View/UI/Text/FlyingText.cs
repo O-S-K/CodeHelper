@@ -10,6 +10,7 @@ public class FlyingText : MonoBehaviour
     private float duration = 2f;
     private Vector2 startScale;
     private Vector2 randomPosX;
+    
     private void Awake()
     {
         messess = GetComponent<Text>();
@@ -21,7 +22,7 @@ public class FlyingText : MonoBehaviour
         this.speed = spe;
         duration = dur;
         messess.text = text;
-        randomPosX.x = Random.Range(-10f, 10f);
+        randomPosX.x = Random.Range(-1f, 1f);
     }
 
     private void Update()
@@ -32,7 +33,7 @@ public class FlyingText : MonoBehaviour
             Vector3 pos = transform.position;
             pos.y += speed * Time.deltaTime;
             transform.position = Vector3.Lerp(transform.position, 
-                new Vector3(randomPosX.x, pos.y, pos.z), Random.Range(0.5f, 09f));
+                new Vector3(randomPosX.x, pos.y, pos.z), Random.Range(0.5f, 0.9f));
 
             // change alpha value
             alpha -= Time.deltaTime / duration;

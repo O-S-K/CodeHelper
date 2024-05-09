@@ -2,97 +2,101 @@
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class HoldButtonInTime : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPointerClickHandler, IPointerUpHandler
+namespace OSK
 {
-    public enum ETypeHold
+    public class HoldButtonInTime : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler,
+        IPointerUpHandler
     {
-        Button,
-        Keyboard
-    }
-
-    public ETypeHold TypeHold = ETypeHold.Keyboard;
-    
-     public Vector3 hiddenSize = Vector3.zero;
-    public float speed = 0.3f;
-    public Transform bar;
-
-    public float timeCompleted = 1;
-    public UnityEvent Completed;
-
-    private float escHeldFor;
-    private bool isCompleted;
-
-    private bool isProgress;
-
-    private  void Start()
-    {
-        transform.localScale = hiddenSize;
-        isCompleted = false;
-    }
-
-    private  void Update()
-    {
-        if (TypeHold == ETypeHold.Keyboard) // example
+        public enum ETypeHold
         {
-            isProgress = Input.GetKey(KeyCode.Escape);
-        }
-        
-        if (isProgress)
-        {
-            Tweener.Instance.ScaleTo(transform, Vector3.one, speed, 0f, TweenEasings.BounceEaseOut);
-        }
-        else
-        {
-            escHeldFor = 0;
+            Button,
+            Keyboard
         }
 
-        if (isProgress)
+        public ETypeHold TypeHold = ETypeHold.Keyboard;
+
+        public Vector3 hiddenSize = Vector3.zero;
+        public float speed = 0.3f;
+        public Transform bar;
+
+        public float timeCompleted = 1;
+        public UnityEvent Completed;
+
+        private float escHeldFor;
+        private bool isCompleted;
+
+        private bool isProgress;
+
+        private void Start()
         {
-            escHeldFor += Time.deltaTime;
-            CancelInvoke(nameof(HideText));
-            Invoke(nameof(HideText), 2f);
+            transform.localScale = hiddenSize;
+            isCompleted = false;
         }
 
-        if(escHeldFor > timeCompleted && !isCompleted)
+        private void Update()
         {
-            isCompleted = true;
-            OnCompleted();
+            if (TypeHold == ETypeHold.Keyboard) // example
+            {
+                isProgress = Input.GetKey(KeyCode.Escape);
+            }
+
+            if (isProgress)
+            {
+                Tweener.Instance.ScaleTo(transform, Vector3.one, speed, 0f, TweenEasings.BounceEaseOut);
+            }
+            else
+            {
+                escHeldFor = 0;
+            }
+
+            if (isProgress)
+            {
+                escHeldFor += Time.deltaTime;
+                CancelInvoke(nameof(HideText));
+                Invoke(nameof(HideText), 2f);
+            }
+
+            if (escHeldFor > timeCompleted && !isCompleted)
+            {
+                isCompleted = true;
+                OnCompleted();
+            }
+
+            if (bar != null)
+            {
+                var amount = escHeldFor / timeCompleted;
+                bar.transform.localScale = new Vector3(amount, 1f, 1f);
+            }
         }
 
-        if (bar != null)
+        private void OnCompleted()
         {
-            var amount = escHeldFor / timeCompleted;
-            bar.transform.localScale = new Vector3(amount, 1f, 1f);
+            Completed?.Invoke();
         }
-    }
 
-    private void OnCompleted()
-    {
-        Completed?.Invoke();
-    }
+        public void HideText()
+        {
+            //Tweener.Instance.ScaleTo(transform, hiddenSize, speed, 0f, TweenEasings.QuarticEaseIn);
+        }
 
-    public void HideText()
-    {
-        //Tweener.Instance.ScaleTo(transform, hiddenSize, speed, 0f, TweenEasings.QuarticEaseIn);
-    }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            //isProgress = true;
+        }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        //isProgress = true;
-    }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            //isProgress = false;
+        }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        //isProgress = false;
-    }
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            isProgress = true;
+        }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        isProgress = true;
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        isProgress = false;
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            isProgress = false;
+        }
     }
 }

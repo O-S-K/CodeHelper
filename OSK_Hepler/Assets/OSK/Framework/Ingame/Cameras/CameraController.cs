@@ -7,7 +7,7 @@ public class CameraController : OSK.SingletonMono<CameraController>
     /* ------------------------ Inspector Assigned Fields ----------------------- */
 
     public Camera cameraMain;
-    private Tweener camShake;
+    //private Tweener camShake;
 
     /* ------------------------------ Unity Events ------------------------------ */
 

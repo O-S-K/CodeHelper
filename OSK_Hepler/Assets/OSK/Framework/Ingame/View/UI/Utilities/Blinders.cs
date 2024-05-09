@@ -3,59 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Blinders : MonoBehaviour
+namespace OSK
 {
-    public Transform left, right;
-    public bool startsOpen, openAtStart = true;
-
-    public UnityEvent openCompleted;
-    public UnityEvent closeCompleted;
-
-    private float duration = 0.3f;
-    private bool isOpen;
-
-    private void Start()
+    public class Blinders : MonoBehaviour
     {
-        isOpen = startsOpen;
+        public Transform left, right;
+        public bool startsOpen, openAtStart = true;
 
-        if (startsOpen) return;
+        public UnityEvent openCompleted;
+        public UnityEvent closeCompleted;
 
-        left.transform.localScale = new Vector3(1f, 1f, 1f);
-        right.transform.localScale = new Vector3(1f, 1f, 1f);
+        private float duration = 0.3f;
+        private bool isOpen;
 
-        if(openAtStart)
-            Invoke(nameof(Open), 0.5f);
-    }
+        private void Start()
+        {
+            isOpen = startsOpen;
 
-    public void Close()
-    {
-        if (!isOpen) return;
+            if (startsOpen) return;
 
-        Tweener.Instance.ScaleTo(left, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
-        Tweener.Instance.ScaleTo(right, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
-        Invoke(nameof(CloseCloseCompleted), duration * 0.6f);
-        isOpen = false;
-    }
+            left.transform.localScale = new Vector3(1f, 1f, 1f);
+            right.transform.localScale = new Vector3(1f, 1f, 1f);
 
-    public void Open()
-    {
-        Tweener.Instance.ScaleTo(left, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
-        Tweener.Instance.ScaleTo(right, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
-        Invoke(nameof(OpenCloseCompleted), duration * 0.6f);
-        isOpen = true;
-    }
+            if (openAtStart)
+                Invoke(nameof(Open), 0.5f);
+        }
 
-    public float GetDuration()
-    {
-        return duration;
-    }
+        public void Close()
+        {
+            if (!isOpen) return;
 
-    private void OpenCloseCompleted()
-    {
-        openCompleted?.Invoke();
-    }
-    private void CloseCloseCompleted()
-    {
-        closeCompleted?.Invoke();
+            Tweener.Instance.ScaleTo(left, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
+            Tweener.Instance.ScaleTo(right, Vector3.one, duration, 0f, TweenEasings.BounceEaseOut);
+            Invoke(nameof(CloseCloseCompleted), duration * 0.6f);
+            isOpen = false;
+        }
+
+        public void Open()
+        {
+            Tweener.Instance.ScaleTo(left, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
+            Tweener.Instance.ScaleTo(right, new Vector3(0f, 1f, 1f), duration, 0f, TweenEasings.BounceEaseOut);
+            Invoke(nameof(OpenCloseCompleted), duration * 0.6f);
+            isOpen = true;
+        }
+
+        public float GetDuration()
+        {
+            return duration;
+        }
+
+        private void OpenCloseCompleted()
+        {
+            openCompleted?.Invoke();
+        }
+
+        private void CloseCloseCompleted()
+        {
+            closeCompleted?.Invoke();
+        }
     }
 }

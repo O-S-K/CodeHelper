@@ -6,7 +6,21 @@ namespace OSK
 {
     public class ScreenManager : SingletonMono<ScreenManager>
     {
-        [Tooltip("The list of Screen components that are used in the game.")]
+        [ContextMenu("GetOrAdd_AllScreens")]
+        public void GetAllScreenForChild()
+        {
+            Screens = new List<UIScreen>();
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                UIScreen screen = transform.GetChild(i).GetComponent<UIScreen>();
+                if (screen != null && !Screens.Contains(screen))
+                {
+                    screen.gameObject.name = screen.GetType().Name;
+                    Screens.Add(screen);
+                }
+            }
+        }
+
         public List<UIScreen> Screens = null;
 
         // Screen id back stack
@@ -87,9 +101,10 @@ namespace OSK
                     // Add the screens id to the back stack
                     backStack.Add(currentScreen);
                 }
+
                 OnSwitchingScreens?.Invoke(currentScreen, screen);
             }
-        
+
             // Show the new screen
             screen.Show();
 

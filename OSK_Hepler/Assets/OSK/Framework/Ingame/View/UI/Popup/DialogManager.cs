@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace OSK
@@ -9,8 +7,22 @@ namespace OSK
     {
         public List<Dialog> Dialogs = null;
         public Transform canvas;
- 
 
+        [ContextMenu("GetOrAdd_AllDialogs")]
+        public void GetAllDialogsForChild()
+        {
+            Dialogs = new List<Dialog>();
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Dialog dialog = transform.GetChild(i).GetComponent<Dialog>();
+                if (dialog != null && !Dialogs.Contains(dialog))
+                {
+                    dialog.gameObject.name = dialog.GetType().Name;
+                    Dialogs.Add(dialog);
+                }
+            }
+        }
+        
         public void Setup()
         {
             for (int i = 0; i < Dialogs.Count; i++)
