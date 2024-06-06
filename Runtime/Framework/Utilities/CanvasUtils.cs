@@ -7,6 +7,8 @@ namespace OSK.Utils
 {
     public static class CanvasUtils
     {
+        
+        
         //  if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject())
         public static bool IsPointerOverUI()
         {
@@ -54,6 +56,18 @@ namespace OSK.Utils
             viewportPosition.x -= canvas.sizeDelta.x * canvas.pivot.x;
             viewportPosition.y -= canvas.sizeDelta.y * canvas.pivot.y;
             return viewportPosition;
+        }
+        
+        public static Vector3 WorldToCanvasPosition(RectTransform canvas, Camera camera, Transform transform)
+        {
+            Vector3 viewportPos = camera.WorldToViewportPoint(transform.position);
+
+            var canPos = new Vector3(viewportPos.x.Remap(0.5f, 1.5f, 0f, canvas.rect.width),
+                viewportPos.y.Remap(0.5f, 1.5f, 0f,  canvas.rect.height), 0);
+                        
+            canPos =  canvas.transform.TransformPoint(canPos);
+            canPos = transform.parent == null ? transform.InverseTransformPoint(canPos) : transform.parent.InverseTransformPoint(canPos);
+            return canPos;
         }
     
         public static Vector2 SwitchToRectTransform(RectTransform from, RectTransform to)

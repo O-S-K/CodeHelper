@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace OSK
@@ -21,8 +22,11 @@ namespace OSK
                     Dialogs.Add(dialog);
                 }
             }
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif   
         }
-        
+
         public void Setup()
         {
             for (int i = 0; i < Dialogs.Count; i++)
@@ -31,71 +35,164 @@ namespace OSK
             }
         }
 
-        public T Show<T>(object[] inData = null, bool isHideAllDialog = true, Dialog.DialogClosed dialogClosed = null) where T : Dialog
+        public static T Create<T>(string path, object[] data = null, bool isHideAllDialog = false, Action onShow = null)
+            where T : Dialog
+        {
+            return Instance.CreateFormRes<T>(path, data, isHideAllDialog, onShow);
+        }
+
+        public static T Show<T>(bool isHideAllDialog = false, Action onShow = null)
+            where T : Dialog
+        {
+            return Instance.ShowDialog<T>(isHideAllDialog, onShow);
+        }
+
+        private T ShowDialog<T>(bool isHideAllDialog = false, Action onShow = null)
+            where T : Dialog
         {
             Dialog dialog = Get<T>();
 
             if (isHideAllDialog)
             {
+                HideAllDialog();
             }
 
             if (dialog != null)
             {
-                dialog.Show(inData, dialogClosed);
+                dialog.Show(onShow);
             }
             else
             {
                 Debug.LogErrorFormat($"[PopupController] Popup does not exist");
             }
+
             return (T)dialog;
         }
 
-        public T LoadResourceShow<T>(string pathDialog = "", object[] inData = null, bool isHideAllDialog = true, Dialog.DialogClosed dialogClosed = null) where T : Dialog
+        private T CreateFormRes<T>(string path, object[] data = null, bool isHideAllDialog = false,
+            Action onShow = null) where T : Dialog
         {
             if (isHideAllDialog)
             {
+                HideAllDialog();
             }
 
-            T popup = (T)Instantiate(Resources.Load<T>(pathDialog), canvas);
-            popup.name = pathDialog;
-            popup.Show(inData, dialogClosed);
+            T popup = (T)Instantiate(Resources.Load<T>(path), canvas);
+            popup.name = path;
+            popup.Show(onShow);
             Dialogs.Add(popup);
             return popup;
         }
 
-        public void OnHideDialog(Dialog dialog)
+        public static void Hide<T>(Action onHide = null) where T : Dialog
         {
-            for (int i = Dialogs.Count - 1; i >= 0; i--)
-            {
-                if (dialog == Dialogs[i])
-                {
-                    Dialogs.RemoveAt(i);
-                    break;
-                }
-            }
+            Instance.HideDialog<T>(onHide);
         }
 
-        public void RefreshUI()
-        {
-            if(Dialogs != null)
-            {
-                foreach (var item in Dialogs)
-                {
-                    item.RefreshUI();
-                }
-            }
-        }
-
-        public T Get<T>() where T : Dialog
+        private T HideDialog<T>(Action onHide = null) where T : Dialog
         {
             foreach (var item in Dialogs)
             {
-                if (item is T)
+                if (item as T)
                 {
-                    return (T)item;
+                    item.Hide(onHide);
+                    return item as T;
                 }
             }
+
+            Debug.LogErrorFormat($"[PopupController] Popup does not exist");
             return null;
         }
+
+        public static void HideAllDialog()
+        {
+            for (int i = Instance.Dialogs.Count - 1; i >= 0; i--)
+            {
+                Instance.Dialogs[i].Hide();
+            }
+        }
+        
+        public static T Get<T>() where T : Dialog
+        {
+            return Instance.GetDialog<T>();
+        }
+
+        public T GetDialog<T>() where T : Dialog
+        {
+            foreach (var item in Dialogs)
+            {
+                if (item is T) return (T)item;
+            }
+
+            return null;
+        }
+    // }
+
+    //
+    // public class DialogBuilder
+    // {
+    //     private string path;
+    //     private object[] data;
+    //     private bool isHideAllDialog;
+    //     private Action onStart;
+    //     private Action onHide;
+    //     private Action onDestroy;
+    //
+    //     public DialogBuilder SetPath(string _path)
+    //     {
+    //         this.path = _path;
+    //         return this;
+    //     }
+    //
+    //     public DialogBuilder SetData(object[] _data)
+    //     {
+    //         this.data = _data;
+    //         return this;
+    //     }
+    //
+    //     public DialogBuilder SetHideAllDialog(bool _isHideAllDialog)
+    //     {
+    //         this.isHideAllDialog = _isHideAllDialog;
+    //         return this;
+    //     }
+    //
+    //     public DialogBuilder SetOnShow(Action _onShow)
+    //     {
+    //         this.onStart = _onShow;
+    //         return this;
+    //     }
+    //
+    //     public DialogBuilder SetOnHide(Action _onHide)
+    //     {
+    //         this.onHide = _onHide;
+    //         return this;
+    //     }
+    //
+    //     public DialogBuilder SetOnDestroy(Action _onDestroy)
+    //     {
+    //         this.onDestroy = _onDestroy;
+    //         return this;
+    //     }
+    //
+    //
+    //     public T BuildCreate<T>() where T : Dialog
+    //     {
+    //         return DialogManager.Create<T>(path, data, isHideAllDialog, onStart);
+    //     }
+    //
+    //     public T BuildShow<T>() where T : Dialog
+    //     {
+    //         return DialogManager.Show<T>(data, isHideAllDialog, onStart);
+    //     }
+    //
+    //     public void BuildHide<T>() where T : Dialog
+    //     {
+    //         DialogManager.Hide<T>(onHide);
+    //     }
+    //
+    //     public void BuildDestroy<T>(float timeDelay = 0) where T : Dialog
+    //     {
+    //         DialogManager.Get<T>().Destroyed(timeDelay, onDestroy);
+    //     }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -10,7 +11,7 @@ namespace OSK
 {
     public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
-        public Text text;
+        public TextMeshProUGUI text;
         public Appearer appearer;
         public Image bg;
         public Color normalColor, hoverColor;
@@ -20,6 +21,7 @@ namespace OSK
 
         public bool isHidesOnClick = false;
 
+        public bool isChangeTextColor = true;
         public bool isAnimEnter = true;
         public bool isChangeColor = true;
 
@@ -30,13 +32,17 @@ namespace OSK
         private bool done;
         private bool hovered;
 
+        public GameObject onBtn;
+        public GameObject offBtn;
 
         private void OnValidate()
         {
             if (Application.isEditor && isChangeColor)
             {
                 bg.color = normalColor;
-                text.color = normalColor;
+                
+                if(isChangeTextColor)
+                    text.color = normalColor;
             }
         }
 
@@ -59,8 +65,8 @@ namespace OSK
                 Tweener.Instance.ScaleTo(transform, Vector3.one * scaleHover, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
             //Invoke("RemoveHover", 0.25f);
 
-            AudioManager.Instance.Lowpass(false);
-            AudioManager.Instance.Highpass(false);
+            // AudioManager.Instance.Lowpass(false);
+            // AudioManager.Instance.Highpass(false);
         }
 
         private void RemoveHover()
@@ -73,16 +79,21 @@ namespace OSK
             if (done) return;
             hovered = true;
 
+            if (onBtn != null) onBtn.SetActive(true);
+            if (offBtn != null) offBtn?.SetActive(false);
+
             if (isAnimEnter)
             {
                 Tweener.Instance.ScaleTo(transform, Vector3.one * 1.1f, 0.2f, 0f, TweenEasings.BounceEaseOut);
-                Tweener.Instance.ScaleTo(text.transform, Vector3.one * 0.9f, 0.3f, 0f, TweenEasings.BounceEaseOut);
+                //Tweener.Instance.ScaleTo(text.transform, Vector3.one * 0.9f, 0.3f, 0f, TweenEasings.BounceEaseOut);
             }
 
             if (isChangeColor)
             {
                 bg.color = hoverColor;
-                text.color = hoverColor;
+                
+                if(isChangeTextColor)
+                    text.color = hoverColor;
             }
 
             if (isRotating)
@@ -93,6 +104,9 @@ namespace OSK
         {
             if (done) return;
 
+            if(onBtn != null) onBtn.SetActive(false);
+            if (offBtn != null) offBtn.SetActive(true);
+
             hovered = false;
             Tweener.Instance.ScaleTo(transform, Vector3.one, 0.2f, 0f, TweenEasings.QuadraticEaseOut);
             Tweener.Instance.ScaleTo(text.transform, Vector3.one, 0.1f, 0f, TweenEasings.QuadraticEaseOut);
@@ -100,7 +114,9 @@ namespace OSK
             if (isChangeColor)
             {
                 bg.color = normalColor;
-                text.color = normalColor;
+                
+                if(isChangeTextColor)
+                    text.color = normalColor;
             }
 
             if (isRotating)
@@ -113,7 +129,9 @@ namespace OSK
             if (isChangeColor)
             {
                 bg.color = normalColor;
-                text.color = normalColor;
+                
+                if(isChangeTextColor)
+                    text.color = normalColor;
             }
 
             if (isRotating)

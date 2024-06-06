@@ -9,6 +9,11 @@ public static class Extensions
         return component != null ? component : gameObject.AddComponent<T>();
     }
     
+    public static float Remap (this float value, float from1, float to1, float from2, float to2) {
+        float v = (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+        return v;
+    }
+    
     public static float WrapAngle(this float angle)
     {
         angle %= 360;
@@ -145,5 +150,20 @@ public static class Extensions
     public static Vector3 Add(this Vector3 vector3, float? x = null, float? y = null, float? z = null)
     {
         return new Vector3(vector3.x + (x ?? 0), vector3.y + (y ?? 0), vector3.z + (z ?? 0));
+    }
+    
+    
+    public static int ConvertExcelToInt(string input)
+    {
+        string cleanedInput = input.Replace(" ", "");
+        if (int.TryParse(cleanedInput, out int result))
+        {
+            return result;
+        }
+        else
+        {
+            Debug.LogWarning($"Unable to convert '{cleanedInput}' to an integer.");
+            return 0; // Default value if conversion fails
+        }
     }
 }

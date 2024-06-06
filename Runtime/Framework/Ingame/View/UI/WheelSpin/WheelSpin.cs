@@ -1,5 +1,5 @@
 using UnityEngine;
-// using DG.Tweening;
+using DG.Tweening;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -24,7 +24,7 @@ public class WheelSpin : MonoBehaviour
 
     private bool isSpinning = false; // Flag to prevent multiple spins
     public Transform spinner;
-    // public Ease easeType = Ease.OutQuad; // Type of easing for the spin animation
+    public Ease easeType = Ease.OutQuad; // Type of easing for the spin animation
 
     public float radius = 100f; // Radius of the circle
     public ParticleSystem vfxCompleted;
@@ -72,15 +72,15 @@ public class WheelSpin : MonoBehaviour
         // Calculate the final angle after spinning
         float finalAngle = spinCount * 360f;
 
-        // spinner.DOScale(1.2f, totalSpinDuration / 1.15f).SetDelay(0.1f).SetEase(Ease.InOutSine).OnComplete(() =>
-        // {
-        //     vfxCompleted.Play();
-        //     spinner.DOScale(1f, .25f).SetEase(Ease.OutExpo);
-        // });
-        // // Perform the spin animation using DOTween
-        // spinner.DORotate(new Vector3(0f, 0f, finalAngle), totalSpinDuration, RotateMode.FastBeyond360)
-        //     .SetEase(easeType)
-        //     .OnComplete(() => FinishSpin(finalAngle)); // Call FinishSpin when the spin is complete
+        spinner.DOScale(1.2f, totalSpinDuration / 1.15f).SetDelay(0.1f).SetEase(Ease.InOutSine).OnComplete(() =>
+        {
+            vfxCompleted.Play();
+            spinner.DOScale(1f, .25f).SetEase(Ease.OutExpo);
+        });
+        // Perform the spin animation using DOTween
+        spinner.DORotate(new Vector3(0f, 0f, finalAngle), totalSpinDuration, RotateMode.FastBeyond360)
+            .SetEase(easeType)
+            .OnComplete(() => FinishSpin(finalAngle)); // Call FinishSpin when the spin is complete
     }
 
     private void FinishSpin(float finalAngle)
@@ -97,7 +97,7 @@ public class WheelSpin : MonoBehaviour
 
         // Reset the flag to allow another spin
         isSpinning = false;
-        // spinner.DOKill();
+        spinner.DOKill();
         onCompleted?.Invoke();
     }
 

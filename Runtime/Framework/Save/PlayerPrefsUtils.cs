@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace OSK.Save
@@ -138,10 +139,20 @@ namespace OSK.Save
         {
             return Get<ListWrapper<T>>(key, new ListWrapper<T> { list = defaultValue }).list;
         }
+        
+        public static Dictionary<string, T> GetDictionary<T>(string key)
+        {
+            return Get<ListWrapper<T>>(key, new ListWrapper<T>()).list.ToDictionary(x => x.ToString());
+        }
 
         public static void SetList<T>(string key, List<T> value)
         {
             Set(key, new ListWrapper<T> { list = value });
+        }
+        
+        public static void SetDictionary<T>(string key, Dictionary<string, T> value)
+        {
+            Set(key, new ListWrapper<T> { list = value.Values.ToList() });
         }
 
         #endregion

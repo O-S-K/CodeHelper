@@ -6,66 +6,26 @@ namespace OSK
 {
     public class Dialog : MonoBehaviour
     {
-        private bool isShowing;
-
-        public bool IsShowing
-        {
-            get { return isShowing; }
-        }
-
-        private DialogClosed callback;
-
-        public delegate void DialogClosed(bool cancelled, object[] outData);
-
-
         public virtual void Initialize()
         {
         }
 
-        public virtual void Show(object[] inData, DialogClosed callback)
+        public virtual void Show(System.Action onShow = null)
         {
             gameObject.SetActive(true);
-            this.callback = callback;
-
-            if (isShowing)
-            {
-                return;
-            }
-
-            isShowing = true;
-            // GameManager.SwitchGameState(EGameState.Pause);
+            onShow?.Invoke();
         }
 
-        public virtual void Update()
+        public virtual void Hide(System.Action onHide = null)
         {
-            if (Input.GetKeyUp(KeyCode.Escape))
-            {
-                Hide();
-            }
-        }
-
-        public virtual void Hide()
-        {
-            // GameManager.SetGameStateAfterPause();
+            onHide?.Invoke();
             gameObject.SetActive(false);
-            isShowing = false;
         }
 
-        public virtual void Destroyed(float timeDelay = 0)
+        public virtual void Destroyed(float timeDelay = 0, System.Action onDestroy = null)
         {
-            isShowing = false;
-            HidePopup();
+            onDestroy?.Invoke();
             Destroy(gameObject, timeDelay);
-        }
-
-        public virtual void HidePopup()
-        {
-            // GameManager.SetGameStateAfterPause();
-            DialogManager.Instance.OnHideDialog(this);
-        }
-
-        public virtual void RefreshUI()
-        {
         }
     }
 }

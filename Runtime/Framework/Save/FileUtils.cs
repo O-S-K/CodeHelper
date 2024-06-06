@@ -88,6 +88,8 @@ namespace OSK.Save
         public static void WriteToFile(string fileName, string json, bool isSaveToDocument = true)
         {
             var path = getPath(fileName, isSaveToDocument);
+            
+            CustomDebug.Log("Path Save: " + path);
             FileStream fileStream = new FileStream(path, FileMode.Create);
             using (StreamWriter writer = new StreamWriter(fileStream))
             {

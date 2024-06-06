@@ -116,20 +116,32 @@ namespace OSK.Utils
             return (float)random.NextDouble() * (maximum - minimum) + minimum;
         }
 
-        public static void Shuffle<T>(this IList<T> list)
+        // public static void Shuffle<T>(this IList<T> list)
+        // {
+        //     var count = list.Count;
+        //     var last = count - 1;
+        //     for (var i = 0; i < last; ++i)
+        //     {
+        //         var r = UnityEngine.Random.Range(i, count);
+        //         var tmp = list[i];
+        //         list[i] = list[r];
+        //         list[r] = tmp;
+        //     }
+        // }
+        //
+        public static void Shuffle<T>(List<T> list)
         {
-            var count = list.Count;
-            var last = count - 1;
-            for (var i = 0; i < last; ++i)
+            var rng = new System.Random();
+            int n = list.Count;
+            while (n > 1)
             {
-                var r = UnityEngine.Random.Range(i, count);
-                var tmp = list[i];
-                list[i] = list[r];
-                list[r] = tmp;
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
             }
         }
-
-
 
         //public static  T RandomItemDropInPercent<T>(List<T> listItem)
         //{

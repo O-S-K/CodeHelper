@@ -13,7 +13,6 @@ namespace OSK.Save
         public static void SaveJson(object data, string fileName, bool isSaveToDocument = true)
         {
             string json = JsonUtility.ToJson(data);
-            CustomDebug.Log("Path json: " + fileName);
             FileUtils.WriteToFile(fileName, json, isSaveToDocument);
             refreshEditor();
         }
@@ -21,7 +20,6 @@ namespace OSK.Save
         public static void LoadJson(object data, string fileName, bool isSaveToDocument = true)
         {
             string json = FileUtils.ReadFromFile(fileName, isSaveToDocument);
-            CustomDebug.Log("Load Json: " + json);
             JsonUtility.FromJsonOverwrite(json, data);
             refreshEditor();
         }

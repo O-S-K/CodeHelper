@@ -19,9 +19,9 @@ public class SoundEffect : MonoBehaviour {
 			audioSource.pitch = (1f + Random.Range (-0.2f, 0.2f)) * targetPitch;
 		}
 
-		audioSource.PlayOneShot (clip, AudioManager.Instance.volume * volume);
+		audioSource.PlayOneShot (clip, /*AudioManager.Instance.volume * */volume);
 
-		Invoke ("DoDestroy", clip.length * 1.2f);
+		Invoke (nameof(DoDestroy), clip.length * 1.2f);
 	}
 
 	public void ChangeSpatialBlend(float blend, float min, float max) {
