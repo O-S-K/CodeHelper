@@ -57,7 +57,7 @@ namespace OSK
             return Instance.ShowDialog<T>(isHideAllDialog, onShow);
         }
 
-        private T ShowDialog<T>(bool isHideAllDialog = false, Action onShow = null) where T : Dialog
+        public T ShowDialog<T>(bool isHideAllDialog = false, Action onShow = null) where T : Dialog
         {
             Dialog dialog = Get<T>();
 
@@ -78,7 +78,7 @@ namespace OSK
             return (T)dialog;
         }
 
-        private T CreateFormRes<T>(string path, bool isAddDialogs = false, bool isHideAllDialog = false,
+        public T CreateFormRes<T>(string path, bool isAddDialogs = false, bool isHideAllDialog = false,
             Action onShow = null) where T : Dialog
         {
             if (isHideAllDialog)
@@ -101,7 +101,7 @@ namespace OSK
             Instance.HideDialog<T>(onHide);
         }
 
-        private T HideDialog<T>(Action onHide = null) where T : Dialog
+        public T HideDialog<T>(Action onHide = null) where T : Dialog
         {
             foreach (var item in Dialogs)
             {

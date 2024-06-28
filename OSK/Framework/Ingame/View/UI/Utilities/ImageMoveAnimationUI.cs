@@ -151,7 +151,7 @@ public class ImageMoveAnimationUI : OSK.SingletonMono<ImageMoveAnimationUI>
 
         if (imageTransform != null && imageTransform.gameObject.activeInHierarchy)
         {
-            AudioManager.Instance.PlayOneShot("coin_collect_appear", 1, 1);   
+            //AudioManager.Instance.PlayOneShot("coin_collect_appear", 1, 1);   
             imageTransform.position = target.position;
         }
     }
@@ -180,10 +180,9 @@ public class SpawnImageBuilder
     }
 
 
-    public SpawnImageBuilder SetStartPosition(Transform transform)
+    public SpawnImageBuilder SetStartPosition(Transform transform, RectTransform rectTransformCanvas)
     {
-        var convertPos = OSK.Utils.CanvasUtils.WorldToCanvasPosition(
-            HUDManager.Instance.Dialog.GetComponent<RectTransform>(), Camera.main, transform);
+        var convertPos = OSK.Utils.CanvasUtils.WorldToCanvasPosition(rectTransformCanvas, Camera.main, transform);
         _img.startPosition = convertPos;
         return this;
     }

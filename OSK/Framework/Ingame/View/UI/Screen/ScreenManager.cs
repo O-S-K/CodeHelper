@@ -56,7 +56,7 @@ namespace OSK
             for (int i = 0; i < Screens.Count; i++)
             {
                 UIScreen screen = Screens[i];
-                screen.Initialize();
+                // screen.Initialize();
                 screen.gameObject.SetActive(true);
                 screen.Hide();
             }

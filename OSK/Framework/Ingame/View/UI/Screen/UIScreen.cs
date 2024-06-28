@@ -10,9 +10,6 @@ namespace OSK
         public List<ElementUI> elementUIList = new List<ElementUI>();
         protected ElementUI currentElementUI;
 
-        public virtual void Initialize()
-        {
-        }
         public virtual void Show()
         {
             gameObject.SetActive(true);

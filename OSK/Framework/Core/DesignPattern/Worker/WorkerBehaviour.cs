@@ -48,10 +48,8 @@ namespace OSK
 		{
 			this.worker				= worker;
 			this.finishedCallback	= finishedCallback;
-
 			worker.StartWorker();
 		}
-
 		#endregion
 	}
 }
