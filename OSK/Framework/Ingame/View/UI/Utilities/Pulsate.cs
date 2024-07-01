@@ -11,21 +11,27 @@ public class Pulsate : MonoBehaviour
 
     public float delay;
     private float currentDelay;
-    
+
     public Vector3 ratio = Vector3.one;
     private Vector3 originalScale;
 
+    private OSK.Appearer appearer;
+
     private void OnEnable()
     {
-        currentDelay = delay;
+        if (GetComponent<OSK.Appearer>() != null)
+        {
+            appearer = GetComponent<OSK.Appearer>();
+            currentDelay = delay + appearer.duration + appearer.appearAfter;
+            originalScale = Vector3.one;
+        }
+        else
+        {
+            currentDelay = delay;
+            originalScale = transform.localScale;
+        }
     }
-    
 
-    private void Start()
-    {
-        originalScale = transform.localScale;
-    }
-    
     private void Update()
     {
         if (currentDelay > 0)
@@ -36,7 +42,6 @@ public class Pulsate : MonoBehaviour
         {
             float amt = Mathf.Sin(Time.time * speed);
             amt = oneSided ? Mathf.Abs(amt) : amt;
-
             transform.localScale = originalScale + ratio * (amount * amt);
         }
     }
