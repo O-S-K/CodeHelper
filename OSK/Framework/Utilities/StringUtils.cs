@@ -130,47 +130,11 @@ namespace OSK.Utils
             }
 
             return number.ToString();
-        }
-
-        public static string LongToString(long cash, string prefix = "", string suffixTimeUnit = "")
+        } 
+        
+        public static string ShortenString( string input, int length)
         {
-            string[] suffixes = { "", "k", "m", "b" };
-            int suffixIndex;
-            int digits;
-            if (cash == 0)
-            {
-                suffixIndex = 0; // log10 of 0 is not valid
-                digits = cash.ToString().Length;
-            }
-            else if (cash > 0)
-            {
-                suffixIndex = (int)(Mathf.Log10(cash) / 3); // get number of digits and divide by 3
-                digits = cash.ToString().Length;
-            }
-            else
-            {
-                suffixIndex = (int)(Mathf.Log10(Math.Abs(cash)) / 3);
-                digits = Math.Abs(cash).ToString().Length;
-            }
-
-            var dividor = Mathf.Pow(10, suffixIndex * 3); // actual number we print
-            var text = "";
-
-
-            if (digits < 4)
-            {
-                text = prefix + (cash / dividor).ToString() + suffixes[suffixIndex] + suffixTimeUnit;
-            }
-            else if (digits >= 4 && digits < 7)
-            {
-                text = prefix + (cash / dividor).ToString("F2") + suffixes[suffixIndex] + suffixTimeUnit;
-            }
-            else
-            {
-                text = prefix + (cash / dividor).ToString("F3") + suffixes[suffixIndex] + suffixTimeUnit;
-            }
-
-            return text;
-        }
+            return (input.Length > length) ? input.Substring (0, length) + "..." : input;
+        } 
     }
 }
